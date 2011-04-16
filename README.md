@@ -56,6 +56,20 @@ Optional:
 
 \*) ruby shoutbox-client: REQUIRED!
 
+### Usage
+
+Quick Install:
+
+    wget https://github.com/asaaki/shoutbox-client-lib/raw/master/bash/shout.sh
+
+(Put the script into your ~/bin directory and `chmod +x` the file)
+
+Help: `shout.sh -h`
+
+Try: `shout.sh green "shout.sh Test"`
+
+Default group is: **Home**
+
 ## PHP `shout.php`
 
 *Coming soon ...*
