@@ -158,10 +158,6 @@ That should guarantee a wide range usage on many systems.
 
 Will be based on the **shout.php** class lib.
 
-## Python `shout.py`
-
-*Who will write it?*
-
 ## Ruby
 
 For the Ruby version use the corresponding repo/rubygem: [shoutbox-client](https://github.com/benjaminkrause/shoutbox-client)
@@ -181,6 +177,32 @@ In Ruby:
 Try and play:
 
     ShoutboxClient.shout :name => "name", :status => "status", :group => "group", :message => "message", :expires_in => 3600
+
+## Python `shout.py`
+
+*Who will write it?*
+
+## Perl `shout.pl`
+
+*Who will write it? Who needs it?*
+
+## Other languages
+
+If you think, there should be an implementation in other languages:
+
+Develop the stuff, publish it to github and let me know.
+
+I'll then *submodule* them here if it's okay.
+
+## Forks
+
+Of course, you can fork the project and make it better.
+
+Send me your improvements and enhancements as a pull request.
+
+**Notice**
+
+Try to use **[git flow](https://github.com/nvie/gitflow)**! It's cool and easy!
     
 ## Copyrights
 
