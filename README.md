@@ -44,14 +44,14 @@ It's for easier usage on a shell and tries to imitate the functionality of the R
 
 Required:
 
-* auth_token: _your-auth-token_
+* auth\_token: _your-auth-token_
 
 Optional:
 
 * host: _hostname_ * 
 * port: _hostport_
-* proxy_host: _proxyhost_
-* proxy_port: _proxyport_
+* proxy\_host: _proxyhost_
+* proxy\_port: _proxyport_
 * group: _your-default-group_
 
 \*) ruby shoutbox-client: REQUIRED!
