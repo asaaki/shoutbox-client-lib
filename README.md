@@ -181,3 +181,14 @@ In Ruby:
 Try and play:
 
     ShoutboxClient.shout :name => "name", :status => "status", :group => "group", :message => "message", :expires_in => 3600
+    
+## Copyrights
+
+Copyright (c) 2011 Christoph Grabo. See LICENSE.txt for details.
+
+The **ruby client** is copyrighted by Benjamin Krause.
+See ruby/LICENSE.txt for further details.
+
+The **Zend library files** are copyrighted by Zend Technologies USA Inc. and licensed under the *New BSD* license.
+See php/Zend/LICENSE.txt or http://framework.zend.com/license/new-bsd for details.
+
