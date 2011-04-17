@@ -3,7 +3,7 @@
   shout.php - A shoutbox.io PHP client class
 
 Description:  A shoutbox.io client class for PHP5
-Version:      0.0.0-dev1
+Version:      0.1.0
 Author:       Christoph Grabo, <chris@dinarrr.com>
 License:      MIT/X11
 */
