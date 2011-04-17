@@ -168,6 +168,8 @@ For the Ruby version use the corresponding repo/rubygem: [shoutbox-client](https
 
 It has also a standalone shell binary, but this one __needs__ an installed Ruby.
 
+(The rubygem is also integrated here as submodule.)
+
 Quick Install:
 
     gem install shoutbox-client
