@@ -68,11 +68,95 @@ Help: `shout.sh -h`
 
 Try: `shout.sh green "shout.sh Test"`
 
+### Notes
+
 Default group is: **Home**
+
+No proxy settings integrated yet!
 
 ## PHP `shout.php`
 
-*Coming soon ...*
+A PHP Class for pushing to shoutbox.io
+
+### Requirements
+
+Really needs PHP5, minimum version of 5.1 because of an small curl issue for sending PUT requests.
+No, no support for PHP4 - this version is outdated and should never be used!
+
+PHP **libcurl** extension is optional but recommended. (Failsafe: Zend HTTP Client, see below)
+
+### Install
+
+Clone the repo and copy the php directory where you need it.
+
+Follow the Usage instructions.
+
+### Usage
+
+    require 'php/shout.php'
+    $shtbx = new ShoutboxClient();
+    $shtbx->setAuthToken("<YOUR_AUTH_TOKEN>");
+    
+    $shtbx->shout(array(
+      'status'      =>  'green',
+      'name'        =>  'MyTask',
+      'message'     =>  'MyMessage',
+      'group'       =>  'MyGroup',
+      'expires_in'  =>  seconds,
+      'options'     =>  array()
+    ));
+    
+    # or
+    
+    $shtbx->shout('green','MyTask','MyMessage','MyGroup',seconds,array());
+
+Every call will return a boolean, so you can check if the call was successful.
+
+### Shorties
+
+There are some methods for direct status calls:
+
+    $shtbx->green('MyTask','MyMessage');
+    $shtbx->yellow('MyTask','MyMessage');
+    $shtbx->red('MyTask','MyMessage');
+    $shtbx->remove('MyTask');
+
+### Notes
+
+Default group is: **Home**
+
+The *options* array has still no function now. This is for future purposes.
+You can leave it away, it will never hurts anything and anybody.
+
+The default configuration is hard-coded and points to the shoutbox.io server.
+
+If you need other config values you can use the `->configure('key','value')` method call.
+
+No proxy settings integrated yet!
+
+#### Keep in mind
+
+If you use the shorter non-array method call you have to set `NULL` for unused values.
+
+Examples:
+
+    $shtbx->green('MyTask',NULL,'OtherGroup');
+    $shtbx->red('MyTask','MyMessage',NULL,3600);
+
+Example 1: We don't want to have a *message* but a *group*.
+Example 2: We don't want to set a *group* but an *expires_in* time value.
+
+#### Zend HTTP Client lib
+
+shout.php is shipped with some Zend lib files for doing HTTP request on systems where no libcurl is built in into PHP.
+
+That should guarantee a wide range usage on many systems.
+
+## WordPress plugin `wp-shoutbox`
+
+**Planned**
+
+Will be based on the **shout.php** class lib.
 
 ## Python `shout.py`
 
