@@ -5,150 +5,249 @@
 ### pre-defined values and param setup
 ###
 ################################################################################
+SHTBX_PARAM=( $@ )
+SHTBX_PARAMS=$#
 SHTBX_CONFIG=$HOME/.shoutbox
 
 SHTBX_HOST=http://shoutbox.io
 SHTBX_PORT=80
+SHTBX_PATH=/status
 SHTBX_PROXY_HOST=
 SHTBX_PROXY_PORT=
-
-SHTBX_PATH=/status
-
 SHTBX_AUTH_TOKEN=
-
 SHTBX_USER_AGENT="bash shoutbox client (+https://github.com/asaaki/shoutbox-client-lib)"
-
-SHTBX_GROUP=Home
+SHTBX_GROUP=Home #default group!
 SHTBX_STATUS=
 SHTBX_NAME=
 SHTBX_MSG=
 SHTBX_EXP=
-
-SHTBX_FIELDS=2
+SHTBX_JDATA=
 
 ################################################################################
 ###
 ### configuration
 ###
 ################################################################################
-config() {
+shtbx_config() {
   if [[ ! -f $SHTBX_CONFIG ]]; then
-    echo
-    echo "Found no .shoutbox config file in $HOME!"
-    echo "Please create one."
-    echo "For help and auth code go to http://shoutbox.io"
-    echo "and follow the steps (when logged in; click on the wrench icon)."
-    echo
-    exit 7 #code 7 for missing config
+    shtbx_error "Found no .shoutbox config file in $HOME!" #func
   fi
   CFG_SHTBX_AUTH_TOKEN=`awk -F ": " '$1~/^auth_token$/ {print $2}' $SHTBX_CONFIG`
   if [[ -n $CFG_SHTBX_AUTH_TOKEN ]]; then
     SHTBX_AUTH_TOKEN=$CFG_SHTBX_AUTH_TOKEN
   else
-    echo "No Auth_Token found!"
-    echo "Get your token from shoutbox.io and save it into your config file!"
-    exit 6 #code 6 for missing auth_token in config
+    shtbx_error "No Auth_Token found!" #func
   fi
   CFG_SHTBX_HOST=`awk -F ": " '$1~/^host$/ {print $2}' $SHTBX_CONFIG`
-  CFG_SHTBX_PORT=`awk -F ": " '$1~/^port$/ {print $2}' $SHTBX_CONFIG`
-  CFG_SHTBX_PROXY_HOST=`awk -F ": " '$1~/^proxy_host$/ {print $2}' $SHTBX_CONFIG`
-  CFG_SHTBX_PROXY_PORT=`awk -F ": " '$1~/^proxy_port$/ {print $2}' $SHTBX_CONFIG`
-  CFG_SHTBX_GROUP=`awk -F ": " '$1~/^group$/ {print $2}' $SHTBX_CONFIG`
   if [[ -n $CFG_SHTBX_HOST ]]; then SHTBX_HOST=$CFG_SHTBX_HOST; fi
+  CFG_SHTBX_PORT=`awk -F ": " '$1~/^port$/ {print $2}' $SHTBX_CONFIG`
   if [[ -n $CFG_SHTBX_PORT ]]; then SHTBX_PORT=$CFG_SHTBX_PORT; fi
+  CFG_SHTBX_PROXY_HOST=`awk -F ": " '$1~/^proxy_host$/ {print $2}' $SHTBX_CONFIG`
   if [[ -n $CFG_SHTBX_PROXY_HOST ]]; then SHTBX_PROXY_HOST=$CFG_SHTBX_PROXY_HOST; fi
+  CFG_SHTBX_PROXY_PORT=`awk -F ": " '$1~/^proxy_port$/ {print $2}' $SHTBX_CONFIG`
   if [[ -n $CFG_SHTBX_PROXY_PORT ]]; then SHTBX_PROXY_PORT=$CFG_SHTBX_PROXY_PORT; fi
+  CFG_SHTBX_GROUP=`awk -F ": " '$1~/^group$/ {print $2}' $SHTBX_CONFIG`
   if [[ -n $CFG_SHTBX_GROUP ]]; then SHTBX_GROUP=$CFG_SHTBX_GROUP; fi
 }
 
-# curl binary check
-curlcheck() {
+################################################################################
+###
+### curl binary check
+###
+################################################################################
+shtbx_curlcheck() {
   SHTBX_CURL=`which curl`
   if [[ -z `which curl` ]]; then
-    echo "No curl found. Please install it before usage of shout.sh"
-    exit 9; #code 9 for missing curl
+    shtbx_error "no curl found - please install"
   fi
-  #echo "It seems to be that we can use curl."
 }
 
 ################################################################################
 ###
-### shout - Yeeha!
+### input
 ###
 ################################################################################
-shout() {
+shtbx_input() {
+  case $SHTBX_PARAMS in
+    0)
+      # no input => help
+      shtbx_error "no input"
+      ;;
+    1)
+      # only help modus available
+      case ${SHTBX_PARAM[0]} in
+        ?|--help|--usage)
+          shtbx_usage #func
+          exit 0
+          ;;
+        42)
+          shtbx_answers #func
+          exit 42
+          ;;
+        *)
+          # also help because we couldn't recognize input
+          shtbx_usage #func
+          exit 1
+          ;;
+      esac
+      ;;
+    2)
+      # status and name;no message, no options
+      shtbx_status #func
+      shtbx_name #func
+      ;;
+    3)
+      # status, name and message; no options
+      shtbx_status #func
+      shtbx_name #func
+      shtbx_message #func
+      ;;
+    *)
+      # status, name and message + options
+      shtbx_status
+      shtbx_name
+      shtbx_message
+      shtbx_more_options
+      ;;
+  esac
+}
 
-# full template
-JDATA=`cat <<JSON
-{
-  "status":"$SHTBX_STATUS",
-  "name":"$SHTBX_NAME",
-  "message":"$SHTBX_MSG",
-  "group":"$SHTBX_GROUP",
-  "expires_in":$SHTBX_EXP
-} 
+################################################################################
+###
+### status check
+###
+################################################################################
+shtbx_status() {
+  sts=${SHTBX_PARAM[0]}
+  case $sts in
+    green)
+      SHTBX_STATUS=$sts
+      ;;
+    yellow|red)
+      if [[ -z ${SHTBX_PARAM[2]} ]]; then
+        shtbx_error "no message provided" #func
+      fi
+      SHTBX_STATUS=$sts
+      ;;
+    remove)
+      # ignore message if provided => empty the value for later call
+      SHTBX_PARAM[2]=
+      SHTBX_STATUS=$sts
+      ;;
+    *)
+      shtbx_error "wrong status" #func
+      ;;
+  esac
+}
+
+################################################################################
+###
+### name assignment
+###
+################################################################################
+shtbx_name() {
+  SHTBX_NAME=${SHTBX_PARAM[1]} #no further checks needed
+}
+
+################################################################################
+###
+### message assignment
+###
+################################################################################
+shtbx_message() {
+  SHTBX_MSG=${SHTBX_PARAM[2]} #no further checks needed
+}
+
+################################################################################
+###
+### group assignment
+###
+################################################################################
+shtbx_group() {
+  SHTBX_GROUP=$1 #use given param
+}
+
+################################################################################
+###
+### expires_in assignment
+###
+################################################################################
+shtbx_expires_in() {
+  SHTBX_EXP=$1 #use given param
+}
+
+################################################################################
+###
+### more options checker for group/expires_in
+###
+################################################################################
+shtbx_more_options() {
+  for (( key=3; key<=$SHTBX_PARAMS; key++ ))
+  do
+    case ${SHTBX_PARAM[$key]} in
+      -g|--group)
+        shtbx_group ${SHTBX_PARAM[$key+1]} #func
+        continue #skips next
+        ;;
+      -e|--expires|--expires_in)
+        shtbx_expires_in ${SHTBX_PARAM[$key+1]} #func
+        continue #skips next
+        ;;
+    esac
+  done
+}
+
+################################################################################
+###
+### json builder
+###
+################################################################################
+shtbx_build_json() {
+#pre + status&name&group
+SHTBX_JDATA=`cat <<JSON
+{"status":"$SHTBX_STATUS","name":"$SHTBX_NAME","group":"$SHTBX_GROUP"
 JSON`
-
-
-case $SHTBX_FIELDS in
-  2)
-JDATA=`cat <<JSON
-{
-  "status":"$SHTBX_STATUS",
-  "name":"$SHTBX_NAME"
-} 
+#add message if available
+if [[ -n $SHTBX_MSG ]]; then
+SHTBX_JDATA=$SHTBX_JDATA`cat <<JSON
+,"message":"$SHTBX_MSG"
 JSON`
-    ;;
-  3)
-JDATA=`cat <<JSON
-{
-  "status":"$SHTBX_STATUS",
-  "name":"$SHTBX_NAME",
-  "message":"$SHTBX_MSG"
-} 
+fi
+#add expires_in time if available
+if [[ -n $SHTBX_EXP ]]; then
+SHTBX_JDATA=$SHTBX_JDATA`cat <<JSON
+,"expires_in":"$SHTBX_EXP"
 JSON`
-    ;;
-  4)
-  # status,name,message,group
-JDATA=`cat <<JSON
-{
-  "status":"$SHTBX_STATUS",
-  "name":"$SHTBX_NAME",
-  "message":"$SHTBX_MSG",
-  "group":"$SHTBX_GROUP"
-} 
+fi
+#post
+SHTBX_JDATA=$SHTBX_JDATA`cat <<JSON
+}
 JSON`
-    ;;
-esac
+}
 
-echo "debug---"
-echo "$JDATA"
-echo "---debug"
-
-#DATA_TEST='{"name":"shout.sh","status":"green","group":"shout.sh"}'
-
-#JSON_CONTENT=""
-#if [[ -z $input ]]; then JSONCONTENT=$JSON_CONTENT+$input; fi
-#JSONDATA="{"+$JSON_CONTENT+"}"
-
+################################################################################
+###
+### shout it - Yeeha!
+###
+################################################################################
+shtbx_shout() {
   RESP=`curl -X PUT $SHTBX_HOST:$SHTBX_PORT$SHTBX_PATH \
     -A "$SHTBX_USER_AGENT" \
     -H "Content-Type: application/json" \
     -H "Accept: application/json" \
     -H "X-Shoutbox-Auth-Token: $SHTBX_AUTH_TOKEN" \
-    -d "$JDATA" \
+    -d "$SHTBX_JDATA" \
     2>/dev/null`
 
   if [[ $RESP == "OK" ]]; then
-    echo "You shouted fine."
+    exit 0
   else
-    echo "Error! (Message: $RESP)"
-    exit 8 #code 8 for broken curling
+    shtbx_error "shoutbox.io Error! [response: $RESP]" #func
   fi
 }
 
-answers() {
-  curlcheck
+shtbx_answers() {
+  shtbx_curlcheck #func
   curl http://23569.net/42 2>/dev/null
 }
 
@@ -157,40 +256,50 @@ answers() {
 ### usage - basic help
 ###
 ################################################################################
-usage() {
+shtbx_usage() {
 cat <<USAGEBANNER
 # shoutbox.io Bash Script
 # 2011 by Christoph Grabo <chris@dinarrr.com>
 # License: MIT/X11
 
 Usage:
-  shout.sh <status> <name> [<message>] [<group>] {options}
-  
-  status:
-    <green|yellow|red|remove>
+  shout.sh STATUS NAME [MESSAGE] [OPTION]...
 
-    'green' can go without a message
-    'yellow' and 'red' really NEED a message!
-    'remove' deletes a <what> term from your shoutbox
-    
-  name:
+  STATUS
+  
+    *only: (green|yellow|red|remove)
+
+    'green' can go without a MESSAGE
+    'yellow' and 'red' really need a MESSAGE!
+    'remove' deletes a NAME term from your shoutbox
+
+  NAME
+  
     short descriptive term
     for example your service names, websites, servers, ...
     put "quotation marks" around the term if spaces are used
-        
-  message:
-    *optional
+
+  MESSAGE
+  
+    *optional for green status
     information about what went wrong
     put "quotation marks" around the message if spaces are used
     HINT: you can use HTML tags like <a href="{URL}">service-link</a>
+
+  OPTIONS
+
+    -g|--group GROUPNAME
     
-  group:
-    *optional
-    you can group your shouts
-    put "quotation marks" around the group if spaces are used
+      *optional
+      you can group your shouts
+      put "quotation marks" around the group if spaces are used
+      
+    -e|--expires|--expires_in SECONDS
     
-  options:
-    *not yet implemented
+      *optional
+      you can group your shouts
+      put "quotation marks" around the group if spaces are used
+
 
 This help can be viewed with:
 $0 (no parameters)
@@ -199,80 +308,38 @@ or with: -h, --help, --usage, ?
 More infos can be found under https://github.com/asaaki/shoutbox.io-client-lib
 
 shoutbox.io is a website for live status monitoring. (See: http://shoutbox.io/)
+
 USAGEBANNER
-
-curlcheck
-
 }
 
 ################################################################################
 ###
-### main
+### error message and exit
 ###
 ################################################################################
+shtbx_error() {
+  echo "Error! (reason: $1)"
+  echo
+  shtbx_usage #func
+  exit 1
+}
 
-# no params?
-if [[ -z $1 ]];           then usage; exit 1; fi #code 1 for shout.sh w/o params
+################################################################################
+###
+### main routine
+###
+################################################################################
+main() {
+  shtbx_curlcheck #func
+  shtbx_config #func
+  shtbx_input #func
+  shtbx_build_json #func
+  shtbx_shout #func
+}
 
-# one param for help
-if [[ $1 == "-h" ]];      then usage; exit 2; fi #code 2 for help
-if [[ $1 == "--help" ]];  then usage; exit 2; fi
-if [[ $1 == "--usage" ]]; then usage; exit 2; fi
-if [[ $1 == "?" ]];       then usage; exit 2; fi
-if [[ $1 == "42" ]];      then answers; exit 42; fi
-
-# check for curl bin
-curlcheck
-
-# load config
-config
-
-# hard param structure:
-# shout.sh status name message group options
-if [[ $# -gt 1 ]]; then
-  
-  # $1 = STATUS
-  if [[ "$1" = "green" ]] || [[ "$1" = "yellow" ]] || [[ "$1" = "red" ]] || [[ "$1" = "remove" ]]; then
-    #echo "Status: $1"
-    SHTBX_STATUS=$1
-  else
-    echo "Status: $1"
-    echo "Error - You can select from [green,yellow,red,remove] only."
-    echo "Use '$0 -h' for details."
-    exit 4 #code 4 for wrong selection
-  fi
-  # $2 = NAME
-  # no IF because we really need a minimum of 2 params!
-  #echo "Name: $2"
-  SHTBX_NAME=$2
-  SHTBX_FIELDS=2
-  
-  # $3 = MESSAGE
-  if [[ -n $3 ]]; then
-    #echo "Message: $3"
-    SHTBX_MSG=$3
-    SHTBX_FIELDS=3
-  fi
-  
-  # $4 = GROUP
-  if [[ -n $4 ]]; then
-    #echo "Group: $4"
-    SHTBX_GROUP=$4
-    SHTBX_FIELDS=4
-  fi
-  
-  if [[ $# -gt 4 ]]; then
-    echo "You have given more than 4 params, but {options} not yet implemented."
-    echo "shout.sh will ignore the additional params!"
-  fi
-  
-else
-  usage
-  exit 3 #you used only one param but not the help option!
-fi
-
-# do the shout!
-shout
-
-# fin!
+#run!
+main
 exit 0
+
+################################################################################
+#EOF
