@@ -1,3 +1,6 @@
+MIT License http://de.wikipedia.org/wiki/MIT-Lizenz
+Kurz: Es ist kostenlos. Du kannst es kommerziell nutzen. Klag mich nicht an.
+
 Copyright (c) 2011 Christoph Grabo
 
 Hiermit wird unentgeltlich, jeder Person, die eine Kopie der Software und der

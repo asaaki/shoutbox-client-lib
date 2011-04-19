@@ -282,6 +282,7 @@ Usage:
   MESSAGE
   
     *optional for green status
+    
     information about what went wrong
     put "quotation marks" around the message if spaces are used
     HINT: you can use HTML tags like <a href="{URL}">service-link</a>
