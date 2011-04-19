@@ -258,7 +258,9 @@ Try to use **[git flow](https://github.com/nvie/gitflow)**! It's cool and easy!
 ### This library
 
 Copyright (c) 2011 Christoph Grabo. See LICENSE.txt for details.
+
 MIT License http://en.wikipedia.org/wiki/MIT_License
+
 IN SHORT: It's free. You can use it commercially. Don't sue me.
 
 ### External parts
@@ -266,10 +268,12 @@ IN SHORT: It's free. You can use it commercially. Don't sue me.
 #### shoutbox ruby client (via submodule)
 
 The **ruby client** is copyrighted by Benjamin Krause.
+
 See ruby/LICENSE.txt for further details.
 
 #### Zend stuff (used in PHP class)
 
 The **Zend library files** are copyrighted by Zend Technologies USA Inc. and licensed under the *New BSD* license.
+
 See php/Zend/LICENSE.txt or http://framework.zend.com/license/new-bsd for details.
 
