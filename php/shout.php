@@ -2,10 +2,10 @@
 /*
   shout.php - A shoutbox.io PHP client class
 
-Description:  A shoutbox.io client class for PHP5
-Version:      0.1.1
-Author:       Christoph Grabo, <chris@dinarrr.com>
-License:      MIT/X11
+  Description:  A shoutbox.io client class for PHP5
+  Author:       Christoph Grabo, <chris@dinarrr.com>
+  License:      MIT/X11
+
 */
 
 /*
@@ -28,8 +28,6 @@ License:      MIT/X11
 
 /**
  * Class ShoutboxClient
- *
- * @license http://url-to-mit-license MIT/X11
 **/
 class ShoutboxClient {
 
@@ -65,6 +63,16 @@ class ShoutboxClient {
     $this->cfg['user_agent']    = 'php shoutbox client (+https://github.com/asaaki/shoutbox-client-lib)';
     return true;
   } #config
+  
+  public function loadYAML($ycfg = NULL) {
+    # TODO insert lib "spyc"
+    # see: http://code.google.com/p/spyc/
+    if( empty($ycfg) ) {
+      # try to load ".shoutbox"
+    } else {
+      # load the given path
+    }
+  }
   
   public function configure($key,$value) {
     $this->cfg[$name] = $value;

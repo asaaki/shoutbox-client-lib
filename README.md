@@ -58,15 +58,64 @@ Optional:
 
 ### Usage
 
-Quick Install:
+#### Quick Install
 
+    mkdir ~/bin
+    cd ~/bin
     wget https://github.com/asaaki/shoutbox-client-lib/raw/master/bash/shout.sh
+    chmod +x shout.sh
 
-(Put the script into your ~/bin directory and `chmod +x` the file)
+#### Try
 
-Help: `shout.sh -h`
+`shout.sh green bash-test`
 
-Try: `shout.sh green "shout.sh Test"`
+#### Help
+
+`shout.sh -h`
+
+    # shoutbox.io Bash Script
+    # 2011 by Christoph Grabo <chris@dinarrr.com>
+    # License: MIT/X11
+
+    Usage:
+      shout.sh STATUS NAME [MESSAGE] [OPTION]...
+
+      STATUS
+      
+        *only: (green|yellow|red|remove)
+
+        'green' can go without a MESSAGE
+        'yellow' and 'red' really need a MESSAGE!
+        'remove' deletes a NAME term from your shoutbox
+
+      NAME
+      
+        short descriptive term
+        for example your service names, websites, servers, ...
+        put "quotation marks" around the term if spaces are used
+
+      MESSAGE
+      
+        *optional for green status
+        
+        information about what went wrong
+        put "quotation marks" around the message if spaces are used
+        HINT: you can use HTML tags like <a href="{URL}">service-link</a>
+
+      OPTIONS
+
+        -g|--group GROUPNAME
+        
+          *optional
+          you can group your shouts
+          put "quotation marks" around the group if spaces are used
+          
+        -e|--expires|--expires_in SECONDS
+        
+          *optional
+          you can group your shouts
+          put "quotation marks" around the group if spaces are used
+
 
 ### Notes
 
@@ -158,10 +207,6 @@ That should guarantee a wide range usage on many systems.
 
 Will be based on the **shout.php** class lib.
 
-## Python `shout.py`
-
-*Who will write it?*
-
 ## Ruby
 
 For the Ruby version use the corresponding repo/rubygem: [shoutbox-client](https://github.com/benjaminkrause/shoutbox-client)
@@ -181,3 +226,50 @@ In Ruby:
 Try and play:
 
     ShoutboxClient.shout :name => "name", :status => "status", :group => "group", :message => "message", :expires_in => 3600
+
+## Python `shout.py`
+
+*Who will write it?*
+
+## Perl `shout.pl`
+
+*Who will write it? Who needs it?*
+
+## Other languages
+
+If you think, there should be an implementation in other languages:
+
+Develop the stuff, publish it to github and let me know.
+
+I'll then *submodule* them here if it's okay.
+
+## Forks
+
+Of course, you can fork the project and make it better.
+
+Send me your improvements and enhancements as a pull request.
+
+**Notice**
+
+Try to use **[git flow](https://github.com/nvie/gitflow)**! It's cool and easy!
+    
+## Copyrights
+
+### This library
+
+Copyright (c) 2011 Christoph Grabo. See LICENSE.txt for details.
+MIT License http://en.wikipedia.org/wiki/MIT_License
+IN SHORT: It's free. You can use it commercially. Don't sue me.
+
+### External parts
+
+#### shoutbox ruby client (via submodule)
+
+The **ruby client** is copyrighted by Benjamin Krause.
+See ruby/LICENSE.txt for further details.
+
+#### Zend stuff (used in PHP class)
+
+The **Zend library files** are copyrighted by Zend Technologies USA Inc. and licensed under the *New BSD* license.
+See php/Zend/LICENSE.txt or http://framework.zend.com/license/new-bsd for details.
+
